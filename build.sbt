@@ -17,8 +17,12 @@ resolvers += Resolver.bintrayRepo("websudos", "oss-releases")
 libraryDependencies ++= {
   Seq(
     Akka.actor,
-    Reactive.Streams,
+    Reactive.streams,
     Phantom.dsl,
-    Testing.scalaTest
+    LoggingFrameworks.logBack,
+    Testing.scalaTest,
+    Reactive.streamsTck,
+    Phantom.testkit,
+    Akka.Experimental.stream
   )
 }
