@@ -118,15 +118,5 @@ import scala.concurrent.Await
 //
 //}
 
-case class Opera(name: String)
-
-abstract class OperaTable extends CassandraTable[OperaTable, Opera] with SimpleCassandraConnector {
-  object name extends StringColumn(this) with PartitionKey[String]
-  def fromRow(row: Row): Opera = {
-    Opera(name(row))
-  }
-}
-
-
 
 

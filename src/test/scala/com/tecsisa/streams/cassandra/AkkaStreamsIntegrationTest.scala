@@ -32,7 +32,7 @@ class AkkaStreamsIntegrationTest extends FlatSpec with Matchers with ScalaFuture
 
   it should "works" in {
     val subscriber = OperaTable.subscriber(5, 1)
-    Source(() => operas).to(Sink(subscriber)).run()
+    Source(() => OperaData.operas.toIterator).to(Sink(subscriber)).run()
     Thread.sleep(5000)
   }
 
@@ -45,35 +45,5 @@ class AkkaStreamsIntegrationTest extends FlatSpec with Matchers with ScalaFuture
     if (!session.isClosed)
       session.close()
   }
-
-  val operas = Array(
-    Opera("Leubald"),
-    Opera("Die Laune des Verliebten"),
-    Opera("Die Hochzeit"),
-    Opera("Die Feen"),
-    Opera("Das Liebesverbot"),
-    Opera("Die hohe Braut"),
-    Opera("Männerlist größer als Frauenlist, oder Die glückliche Bärenfamilie"),
-    Opera("Rienzi, der letzte der Tribunen"),
-    Opera("Der fliegende Holländer"),
-    Opera("Die Sarazenin"),
-    Opera("Die Bergwerke zu Falun"),
-    Opera("Tannhäuser und der Sängerkrieg auf dem Wartburg"),
-    Opera("Lohengrin"),
-    Opera("Friedrich I"),
-    Opera("Jesus von Nazareth"),
-    Opera("Achilleus"),
-    Opera("Wieland der Schmied"),
-    Opera("Das Rheingold"),
-    Opera("Die Walküre"),
-    Opera("Die Sieger"),
-    Opera("Tristan und Isolde"),
-    Opera("Die Meistersinger von Nürnberg"),
-    Opera("Luthers Hochzeit"),
-    Opera("Siegfried"),
-    Opera("Götterdämmerung"),
-    Opera("Eine Kapitulation"),
-    Opera("Parsifal")
-  ).toIterator
 
 }
