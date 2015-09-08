@@ -16,6 +16,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
     builder: RequestBuilder[CT, T],
     batchSize: Int,
     concurrentRequests: Int,
+    batchType: BatchType,
     completionFn: () => Unit)
     (implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
 
@@ -32,6 +33,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
             s,
             batchSize,
             concurrentRequests,
+            batchType,
             completionFn)
         )
       )
@@ -67,6 +69,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     subscription: Subscription,
     batchSize: Int,
     concurrentRequests: Int,
+    batchType: BatchType,
     completionFn: () => Unit)
     (implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
 
@@ -110,7 +113,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
   private def executeStatements(): Unit = {
     val query = new BatchQuery(
       buffer.map(builder.request(table, _).qb).toIterator,
-      BatchType.Unlogged,
+      batchType,
       UsingPart.empty,
       false,
       None)

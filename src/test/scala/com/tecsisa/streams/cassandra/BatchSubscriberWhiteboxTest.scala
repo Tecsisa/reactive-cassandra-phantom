@@ -1,5 +1,6 @@
 package com.tecsisa.streams.cassandra
 
+import com.websudos.phantom.batch.BatchType
 import org.reactivestreams.tck.SubscriberWhiteboxVerification.{SubscriberPuppet, WhiteboxSubscriberProbe}
 import org.reactivestreams.tck.{SubscriberWhiteboxVerification, TestEnvironment}
 import org.reactivestreams.{Subscriber, Subscription}
@@ -17,6 +18,7 @@ class BatchSubscriberWhiteboxTest
       OperaRequestBuilder,
       5,
       2,
+      batchType = BatchType.Unlogged,
       completionFn = () => ()) {
 
       override def onSubscribe(s: Subscription): Unit = {
