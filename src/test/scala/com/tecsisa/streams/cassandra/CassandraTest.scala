@@ -54,6 +54,7 @@ abstract class OperaTable extends CassandraTable[OperaTable, Opera] with SimpleC
 
 object OperaData {
 
+  // Yes, you know... I like Wagner a lot :-)
   val operas = Array(
     Opera("Leubald"),
     Opera("Die Laune des Verliebten"),

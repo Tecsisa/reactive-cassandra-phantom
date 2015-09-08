@@ -12,6 +12,12 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration.FiniteDuration
 import scala.util.{Success, Failure}
 
+/**
+ * The [[Subscriber]] internal implementation based on
+ * Akka actors.
+ *
+ * @see [[com.tecsisa.streams.cassandra.ReactiveCassandra.StreamedCassandraTable.subscriber()]]
+ */
 class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
     table: CT,
     builder: RequestBuilder[CT, T],
@@ -44,6 +50,8 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
       )
       s.request(batchSize * concurrentRequests)
     } else {
+      // rule 2.5, must cancel subscription as onSubscribe has been invoked twice
+      // https://github.com/reactive-streams/reactive-streams-jvm#2.5
       s.cancel()
     }
   }
@@ -88,6 +96,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
 
   private var completed = false
 
+  /** It's only created if a flushInterval is provided */
   private val scheduler = flushInterval.map { interval =>
     system.scheduler.schedule(interval, interval, self, BatchActor.ForceExecution)
   }
@@ -146,6 +155,22 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
 
 }
 
+/**
+ * This is the typeclass that should be implemented for a
+ * given instance of T. Every implementation of this typeclass
+ * should be provided implicitly in the scope in order to be
+ * used by the stream.
+ *
+ * {{{
+ * implicit object MyRequestBuilderForT extends RequestBuilder[CT, T] {
+ *  override def request(ct: CT, t: T): ExecutableStatement =
+      ct.insert().value(_.name, t.name)
+ * }
+ * }}}
+ *
+ * @tparam CT the concrete [[CassandraTable]] implementation type
+ * @tparam T the type of streamed elements
+ */
 trait RequestBuilder[CT <: CassandraTable[CT, T], T] {
     def request(ct: CT, t: T): ExecutableStatement
 }
