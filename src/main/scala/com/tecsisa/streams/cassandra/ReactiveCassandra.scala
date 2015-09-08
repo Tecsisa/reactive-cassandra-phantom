@@ -12,7 +12,8 @@ object ReactiveCassandra {
          batchSize: Int = 100,
          concurrentRequests: Int = 5,
          batchType: BatchType = BatchType.Unlogged,
-         completionFn: () => Unit = () => ())
+         completionFn: () => Unit = () => (),
+         errorFn: Throwable => Unit = _ => ())
         (implicit builder: RequestBuilder[CT, T],
          system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]): BatchSubscriber[CT, T] = {
       new BatchSubscriber[CT, T](
@@ -21,7 +22,8 @@ object ReactiveCassandra {
         batchSize,
         concurrentRequests,
         batchType,
-        completionFn)
+        completionFn,
+        errorFn)
     }
   }
 

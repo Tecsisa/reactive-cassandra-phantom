@@ -19,7 +19,9 @@ class BatchSubscriberWhiteboxTest
       5,
       2,
       batchType = BatchType.Unlogged,
-      completionFn = () => ()) {
+      completionFn = () => (),
+      errorFn = _ => ()
+    ) {
 
       override def onSubscribe(s: Subscription): Unit = {
         super.onSubscribe(s)

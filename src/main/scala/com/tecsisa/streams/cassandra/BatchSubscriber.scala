@@ -17,7 +17,8 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
     batchSize: Int,
     concurrentRequests: Int,
     batchType: BatchType,
-    completionFn: () => Unit)
+    completionFn: () => Unit,
+    errorFn: Throwable => Unit)
     (implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
 
   private var actor: ActorRef = _
@@ -34,7 +35,8 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
             batchSize,
             concurrentRequests,
             batchType,
-            completionFn)
+            completionFn,
+            errorFn)
         )
       )
       s.request(batchSize * concurrentRequests)
@@ -70,7 +72,8 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     batchSize: Int,
     concurrentRequests: Int,
     batchType: BatchType,
-    completionFn: () => Unit)
+    completionFn: () => Unit,
+    errorFn: Throwable => Unit)
     (implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
 
   import context.dispatcher
@@ -106,6 +109,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
 
   private def handleError(t: Throwable): Unit = {
     subscription.cancel()
+    errorFn(t)
     buffer.clear()
     context.stop(self)
   }
