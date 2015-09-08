@@ -14,7 +14,9 @@ scalacOptions := Seq("-deprecation", "-target:jvm-1.8", "-encoding", "utf-8")
 
 javacOptions := Seq("-g:none")
 
-resolvers += Resolver.bintrayRepo("websudos", "oss-releases")
+resolvers ++= Seq(
+  Resolver.bintrayRepo("websudos", "oss-releases")
+)
 
 libraryDependencies ++= {
   Seq(
@@ -28,6 +30,10 @@ libraryDependencies ++= {
 }
 
 publishMavenStyle := true
+
+publishArtifact in Test := false
+
+parallelExecution in Test := false
 
 PhantomSbtPlugin.projectSettings
 
