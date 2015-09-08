@@ -16,13 +16,6 @@ object Deps {
     val actor = apply("actor")
 
     private def apply(moduleName: String) = "com.typesafe.akka" %% s"akka-$moduleName" % AkkaVersion
-
-    object Experimental {
-      val stream = apply("stream") % "test"
-
-      private def apply(moduleName: String) =
-        "com.typesafe.akka" %% s"akka-$moduleName-experimental" % AkkaStreamVersion
-    }
   }
 
   object Phantom {

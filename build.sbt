@@ -21,8 +21,8 @@ libraryDependencies ++= {
     Phantom.dsl,
     LoggingFrameworks.logBack,
     Testing.scalaTest,
-    Reactive.streamsTck,
-    Phantom.testkit,
-    Akka.Experimental.stream
+    Reactive.streamsTck
   )
 }
+
+PhantomSbtPlugin.projectSettings

@@ -4,4 +4,4 @@ resolvers ++= Seq(
 
 addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
 
-//addSbtPlugin("com.websudos" %% "phantom-sbt" % "1.10.1")
+addSbtPlugin("com.sphonic" %% "phantom-sbt" % "0.3.0")
