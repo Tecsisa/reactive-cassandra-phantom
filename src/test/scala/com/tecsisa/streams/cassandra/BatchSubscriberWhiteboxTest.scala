@@ -1,16 +1,16 @@
 package com.tecsisa.streams.cassandra
 
 import com.websudos.phantom.batch.BatchType
-import org.reactivestreams.tck.SubscriberWhiteboxVerification.{SubscriberPuppet, WhiteboxSubscriberProbe}
-import org.reactivestreams.tck.{SubscriberWhiteboxVerification, TestEnvironment}
-import org.reactivestreams.{Subscriber, Subscription}
+import org.reactivestreams.tck.SubscriberWhiteboxVerification.{ SubscriberPuppet, WhiteboxSubscriberProbe }
+import org.reactivestreams.tck.{ SubscriberWhiteboxVerification, TestEnvironment }
+import org.reactivestreams.{ Subscriber, Subscription }
 import org.scalatest.testng.TestNGSuiteLike
 
 class BatchSubscriberWhiteboxTest
-  extends SubscriberWhiteboxVerification[Opera](new TestEnvironment(DEFAULT_TIMEOUT_MILLIS))
-  with TestNGSuiteLike with CassandraTest {
+    extends SubscriberWhiteboxVerification[Opera](new TestEnvironment(DEFAULT_TIMEOUT_MILLIS))
+    with TestNGSuiteLike with CassandraTest {
 
-  import OperaTable.{keySpace, session}
+  import OperaTable.{ keySpace, session }
 
   override def createSubscriber(probe: WhiteboxSubscriberProbe[Opera]): Subscriber[Opera] = {
     new BatchSubscriber[OperaTable, Opera](
@@ -59,6 +59,4 @@ class BatchSubscriberWhiteboxTest
   override def createElement(element: Int): Opera = OperaData.operas(element)
 
 }
-
-
 

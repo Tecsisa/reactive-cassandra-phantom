@@ -1,15 +1,15 @@
 package com.tecsisa.streams.cassandra
 
 import akka.actor.ActorSystem
-import com.datastax.driver.core.{VersionNumber, Session}
+import com.datastax.driver.core.{ VersionNumber, Session }
 import com.websudos.phantom.CassandraTable
 import com.websudos.phantom.builder.query.ExecutableStatement
-import com.websudos.phantom.connectors.{KeySpace, ContactPoints, KeySpaceDef}
+import com.websudos.phantom.connectors.{ KeySpace, ContactPoints, KeySpaceDef }
 import com.websudos.phantom.dsl._
 import com.websudos.phantom.keys.PartitionKey
-import org.scalatest.{Suite, BeforeAndAfterAll}
+import org.scalatest.{ Suite, BeforeAndAfterAll }
 
-import scala.concurrent.{Future, Await}
+import scala.concurrent.{ Future, Await }
 import scala.concurrent.duration._
 
 trait CassandraTest extends BeforeAndAfterAll {
@@ -105,7 +105,7 @@ trait SimpleCassandraConnector {
 
   implicit lazy val session: Session = connector.session
 
-  def cassandraVersion: VersionNumber =  connector.cassandraVersion
+  def cassandraVersion: VersionNumber = connector.cassandraVersion
 
-  def cassandraVersions: Set[VersionNumber] =  connector.cassandraVersions
+  def cassandraVersions: Set[VersionNumber] = connector.cassandraVersions
 }

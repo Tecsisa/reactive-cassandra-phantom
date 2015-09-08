@@ -8,6 +8,8 @@ version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.11.7"
 
+crossScalaVersions := Seq("2.11.7", "2.10.5")
+
 scalacOptions := Seq("-deprecation", "-target:jvm-1.8", "-encoding", "utf-8")
 
 javacOptions := Seq("-g:none")
@@ -25,4 +27,8 @@ libraryDependencies ++= {
   )
 }
 
+publishMavenStyle := true
+
 PhantomSbtPlugin.projectSettings
+
+scalariformSettings

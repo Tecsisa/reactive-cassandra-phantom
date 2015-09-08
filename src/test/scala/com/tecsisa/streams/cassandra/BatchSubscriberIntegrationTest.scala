@@ -1,14 +1,14 @@
 package com.tecsisa.streams.cassandra
 
-import java.util.concurrent.{CountDownLatch, TimeUnit}
+import java.util.concurrent.{ CountDownLatch, TimeUnit }
 
-import org.reactivestreams.{Publisher, Subscriber, Subscription}
+import org.reactivestreams.{ Publisher, Subscriber, Subscription }
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{ FlatSpec, Matchers }
 
 class BatchSubscriberIntegrationTest extends FlatSpec with Matchers with ScalaFutures with CassandraTest {
 
-  import OperaTable.{keySpace, session}
+  import OperaTable.{ keySpace, session }
   import ReactiveCassandra._
 
   it should "persist all data" in {

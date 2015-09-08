@@ -1,16 +1,16 @@
 package com.tecsisa.streams.cassandra
 
-import akka.actor.{Props, Actor, ActorRef, ActorSystem}
+import akka.actor.{ Props, Actor, ActorRef, ActorSystem }
 import com.datastax.driver.core.ResultSet
 import com.websudos.phantom.CassandraTable
-import com.websudos.phantom.batch.{BatchType, BatchQuery}
-import com.websudos.phantom.builder.query.{UsingPart, ExecutableStatement}
+import com.websudos.phantom.batch.{ BatchType, BatchQuery }
+import com.websudos.phantom.builder.query.{ UsingPart, ExecutableStatement }
 import com.websudos.phantom.dsl._
-import org.reactivestreams.{Subscription, Subscriber}
+import org.reactivestreams.{ Subscription, Subscriber }
 
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.duration.FiniteDuration
-import scala.util.{Success, Failure}
+import scala.util.{ Success, Failure }
 
 /**
  * The [[Subscriber]] internal implementation based on
@@ -18,7 +18,7 @@ import scala.util.{Success, Failure}
  *
  * @see [[com.tecsisa.streams.cassandra.ReactiveCassandra.StreamedCassandraTable.subscriber()]]
  */
-class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
+class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra] (
     table: CT,
     builder: RequestBuilder[CT, T],
     batchSize: Int,
@@ -26,8 +26,8 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
     batchType: BatchType,
     flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
-    errorFn: Throwable => Unit)
-    (implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
+    errorFn: Throwable => Unit
+)(implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
 
   private var actor: ActorRef = _
 
@@ -45,7 +45,8 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
             batchType,
             flushInterval,
             completionFn,
-            errorFn)
+            errorFn
+          )
         )
       )
       s.request(batchSize * concurrentRequests)
@@ -86,10 +87,10 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     batchType: BatchType,
     flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
-    errorFn: Throwable => Unit)
-    (implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
+    errorFn: Throwable => Unit
+)(implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
 
-  import context.{dispatcher, system}
+  import context.{ dispatcher, system }
 
   private val buffer = new ArrayBuffer[T]()
   buffer.sizeHint(batchSize)
@@ -145,7 +146,8 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
       batchType,
       UsingPart.empty,
       false,
-      None)
+      None
+    )
     query.future().onComplete {
       case Failure(e) => self ! e
       case Success(resp) => self ! resp
@@ -164,7 +166,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
  * {{{
  * implicit object MyRequestBuilderForT extends RequestBuilder[CT, T] {
  *  override def request(ct: CT, t: T): ExecutableStatement =
-      ct.insert().value(_.name, t.name)
+ * ct.insert().value(_.name, t.name)
  * }
  * }}}
  *
@@ -172,5 +174,5 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
  * @tparam T the type of streamed elements
  */
 trait RequestBuilder[CT <: CassandraTable[CT, T], T] {
-    def request(ct: CT, t: T): ExecutableStatement
+  def request(ct: CT, t: T): ExecutableStatement
 }
