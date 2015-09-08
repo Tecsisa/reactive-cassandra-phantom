@@ -9,6 +9,7 @@ import com.websudos.phantom.dsl._
 import org.reactivestreams.{Subscription, Subscriber}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.duration.FiniteDuration
 import scala.util.{Success, Failure}
 
 class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
@@ -17,6 +18,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
     batchSize: Int,
     concurrentRequests: Int,
     batchType: BatchType,
+    flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
     errorFn: Throwable => Unit)
     (implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
@@ -35,6 +37,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
             batchSize,
             concurrentRequests,
             batchType,
+            flushInterval,
             completionFn,
             errorFn)
         )
@@ -63,6 +66,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra](
 
 object BatchActor {
   case object Completed
+  case object ForceExecution
 }
 
 class BatchActor[CT <: CassandraTable[CT, T], T](
@@ -72,16 +76,21 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     batchSize: Int,
     concurrentRequests: Int,
     batchType: BatchType,
+    flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
     errorFn: Throwable => Unit)
     (implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
 
-  import context.dispatcher
+  import context.{dispatcher, system}
 
   private val buffer = new ArrayBuffer[T]()
   buffer.sizeHint(batchSize)
 
   private var completed = false
+
+  private val scheduler = flushInterval.map { interval =>
+    system.scheduler.schedule(interval, interval, self, BatchActor.ForceExecution)
+  }
 
   def receive = {
     case t: Throwable =>
@@ -92,6 +101,10 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
         executeStatements()
       completed = true
 
+    case BatchActor.ForceExecution =>
+      if (buffer.nonEmpty)
+        executeStatements()
+
     case rs: ResultSet =>
       if (completed) shutdown()
       else subscription.request(batchSize)
@@ -101,6 +114,9 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
       if (buffer.size == batchSize)
         executeStatements()
   }
+
+  // Stops the scheduler if it exists
+  override def postStop() = scheduler.map(_.cancel())
 
   private def shutdown(): Unit = {
     completionFn()

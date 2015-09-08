@@ -19,6 +19,7 @@ class BatchSubscriberWhiteboxTest
       5,
       2,
       batchType = BatchType.Unlogged,
+      flushInterval = None,
       completionFn = () => (),
       errorFn = _ => ()
     ) {
