@@ -4,7 +4,7 @@ name := "reactive-cassandra-phantom"
 
 organization := "com.tecsisa.wr"
 
-version := "0.0.1-SNAPSHOT"
+version := "0.0.1"
 
 scalaVersion := "2.11.7"
 
@@ -29,12 +29,21 @@ libraryDependencies ++= {
   )
 }
 
-publishMavenStyle := true
-
-publishArtifact in Test := false
-
 parallelExecution in Test := false
 
+publishMavenStyle := true
+
+scmInfo := Some(ScmInfo(url("https://github.com/Tecsisa/reactive-cassandra-phantom.git"),
+                            "git@github.com:Tecsisa/reactive-cassandra-phantom.git"))
+
+licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+
 PhantomSbtPlugin.projectSettings
+
+publishArtifact in (Test, packageDoc) := false
+
+bintrayOrganization := Some("tecsisa")
+
+bintrayRepository := "maven-bintray-repo"
 
 scalariformSettings
