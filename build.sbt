@@ -2,7 +2,7 @@ import Deps._
 
 name := "reactive-cassandra-phantom"
 
-organization := "com.tecsisa.wr"
+organization := "com.tecsisa"
 
 // Versioning with git
 enablePlugins(GitVersioning)

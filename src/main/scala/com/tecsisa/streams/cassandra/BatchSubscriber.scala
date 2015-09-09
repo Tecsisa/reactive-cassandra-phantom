@@ -26,8 +26,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra] (
     batchType: BatchType,
     flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
-    errorFn: Throwable => Unit
-)(implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
+    errorFn: Throwable => Unit)(implicit system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]) extends Subscriber[T] {
 
   private var actor: ActorRef = _
 
@@ -87,8 +86,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     batchType: BatchType,
     flushInterval: Option[FiniteDuration],
     completionFn: () => Unit,
-    errorFn: Throwable => Unit
-)(implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
+    errorFn: Throwable => Unit)(implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor {
 
   import context.{ dispatcher, system }
 
