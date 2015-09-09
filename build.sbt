@@ -4,7 +4,10 @@ name := "reactive-cassandra-phantom"
 
 organization := "com.tecsisa.wr"
 
-version := "0.0.1"
+// Versioning with git
+enablePlugins(GitVersioning)
+
+git.baseVersion := "1.0.0"
 
 scalaVersion := "2.11.7"
 

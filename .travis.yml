@@ -13,5 +13,4 @@ env:
   - secure: o1wg5ooGw29ifnrH6LzbUZ1HdAF6BW846ozTqS3KFRGbfb25XYIAxGkRMleldjOhkaVvsnwWTcbKZ8A4jTkrgVAQhM6nzzgDToME+BW6bIQZYdh4Vt1vvKQCICazkaygS5sqOKsxLR25sHxG4kZ000d4l4z/Um7naEOfoG/W8/cdPXxxGgGfCUVJRq7ECj2RxJ3+bRPB72bnJswHxdpCvyymuRzWdBpIPOCdZxMC9KZfK+Z5POAoRl7jPWUSGVRLxzFz8GdxuSH+g8kMEhMrgLvnc0ivSOtsPMVIKco6y5prfXa9n3EZqwTVWHXnkUnzzOcTeYWrD2XS4+AkD6URj9HZOlt9iApYT3F7oi8VEkhs4MNwpyhIqDbvcgzTcXa/lOYev1Zc08/neaefz26y9pwS+BpjqVTu1/5bunbQq313cTtzb22Eei0qTfXxFSd1I6qJKqirKA2gzQSLkBiSvcumRoMQi+QSKVJm5l9GIi/aRrwNShU/t6x4wcempdVBrdDpV19xYONE0Qpy3WgG5UHQcAEq+Cz7RgWkUknM/PD1/poLM6/cnyForth1Y5gGyWm32G4egHuzhc4gdB6hXiulwS6NFv+8gxgfau1+zNi62zEYikuuM2B9nc+mbOeokYab7kaC2h/h9zwnQUKu2LT0Pe7bplA8g0/MeZpCggU=
 after_success:
   - >
-      sh "$TRAVIS_BUILD_DIR/.travis.credentials.sh" &&
-      sbt publish
+      test $TRAVIS_BRANCH != "master" && sh "$TRAVIS_BUILD_DIR/.travis.credentials.sh" && sbt publish
