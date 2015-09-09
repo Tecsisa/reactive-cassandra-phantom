@@ -7,7 +7,7 @@ organization := "com.tecsisa.wr"
 // Versioning with git
 enablePlugins(GitVersioning)
 
-git.baseVersion := "0.0.1"
+git.baseVersion := "0.0.2"
 
 scalaVersion := "2.11.7"
 
