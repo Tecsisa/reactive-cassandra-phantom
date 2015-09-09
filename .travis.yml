@@ -6,6 +6,9 @@ script:
 - sbt clean test
 jdk:
 - oraclejdk8
+deploy:
+  on:
+    tags: true
 sudo: false
 env:
   global:
