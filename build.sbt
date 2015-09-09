@@ -9,8 +9,6 @@ enablePlugins(GitVersioning)
 
 git.useGitDescribe := true
 
-//git.baseVersion := "0.0.2"
-
 scalaVersion := "2.11.7"
 
 crossScalaVersions := Seq("2.11.7", "2.10.5")
