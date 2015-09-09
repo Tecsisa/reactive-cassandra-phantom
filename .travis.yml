@@ -14,4 +14,4 @@ env:
 after_success:
   - >
       echo $TRAVIS_BRANCH &&
-      test $TRAVIS_BRANCH != "master" && sh "$TRAVIS_BUILD_DIR/.travis.credentials.sh" && sbt publish
+      test $TRAVIS_BRANCH == "master" && sh "$TRAVIS_BUILD_DIR/.travis.credentials.sh" && sbt publish
