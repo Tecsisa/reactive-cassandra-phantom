@@ -24,6 +24,7 @@ resolvers ++= Seq(
 libraryDependencies ++= {
   Seq(
     Akka.actor,
+    Akka.slf4j % "runtime",
     Reactive.streams,
     Phantom.dsl,
     LoggingFrameworks.logBack,

@@ -60,8 +60,10 @@ object ReactiveCassandra {
       batchType: BatchType = BatchType.Unlogged,
       flushInterval: Option[FiniteDuration] = None,
       completionFn: () => Unit = () => (),
-      errorFn: Throwable => Unit = _ => ())(implicit builder: RequestBuilder[CT, T],
-        system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]): BatchSubscriber[CT, T] = {
+      errorFn: Throwable => Unit = _ => ()
+    )(implicit
+      builder: RequestBuilder[CT, T],
+      system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]): BatchSubscriber[CT, T] = {
       new BatchSubscriber[CT, T](
         ct.asInstanceOf[CT], // not being able to get rid of this casting. Can anyone help?.
         builder,
