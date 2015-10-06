@@ -11,7 +11,7 @@ object Deps {
   }
 
   object Akka {
-    val AkkaVersion = "2.4.0-RC2"
+    val AkkaVersion = "2.4.0"
     val AkkaStreamVersion = "1.0"
     val actor = apply("actor")
     val slf4j = apply("slf4j")

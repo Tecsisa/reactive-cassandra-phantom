@@ -10,7 +10,7 @@ The idea behind this library is to provide a reactive streams subscriber (and ma
 
 This library leverages the [typeclass pattern] in order to keep separate both the streaming logic and the query statements itself that remain under the responsibility of programmers. An implicit class enables Phantom CassandraTable to be enhanced with streaming capabilities so that integration with phantom legacy code is simple and straightforward.
 
-The library is published on [Tecsisa's bintray] and it's currently on version 0.0.7.
+The library is published on [Tecsisa's bintray] and it's currently on version 0.0.8.
 
 ## Usage
 
@@ -30,7 +30,7 @@ Or if you're using the [bintray-sbt] plugin:
 And then, just import the dependency:
 
 ```Scala
-  libraryDependencies += "com.tecsisa" %% "reactive-cassandra-phantom" % "0.0.7"
+  libraryDependencies += "com.tecsisa" %% "reactive-cassandra-phantom" % "0.0.8"
 ```
 
 ### Examples of use
@@ -174,6 +174,11 @@ Please, refer to the [CQL3 documentation] for further explanation.
 - A proper publisher to face the other side of the problem.
 - Incorporate prepared statements as soon as they're available in phantom. This addition should improve the streaming performance greatly.
 
+## Related Work
+
+- [elastic4s - Elasticsearch Scala Client]
+- [Cassandra + Phantom Example]
+
 [reactive streams]: http://www.reactive-streams.org/
 [phantom]: https://github.com/websudos/phantom
 [elastic4s]: https://github.com/sksamuel/elastic4s 
@@ -182,3 +187,5 @@ Please, refer to the [CQL3 documentation] for further explanation.
 [bintray-sbt]: https://github.com/softprops/bintray-sbt
 [Akka Streams documentation]:  http://doc.akka.io/docs/akka-stream-and-http-experimental/1.0/scala/stream-integrations.html#Integrating_with_Reactive_Streams
 [CQL3 documentation]: http://docs.datastax.com/en/cql/3.1/cql/cql_reference/batch_r.html
+[elastic4s - Elasticsearch Scala Client]: https://github.com/sksamuel/elastic4s
+[Cassandra + Phantom Example]: https://github.com/thiagoandrade6/cassandra-phantom
