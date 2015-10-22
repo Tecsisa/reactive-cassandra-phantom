@@ -21,7 +21,8 @@ class BatchSubscriberWhiteboxTest
       batchType = BatchType.Unlogged,
       flushInterval = None,
       completionFn = () => (),
-      errorFn = _ => ()
+      errorFn = _ => (),
+      maxRetries = 3
     ) {
 
       override def onSubscribe(s: Subscription): Unit = {
