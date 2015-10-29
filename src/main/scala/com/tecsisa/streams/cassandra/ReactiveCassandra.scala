@@ -41,7 +41,7 @@ object ReactiveCassandra {
      *                      been reached yet. Useful in never-ending streams that will never been completed.
      * @param completionFn a function that will be invoked when the stream is completed
      * @param errorFn a function that will be invoked when an error occurs
-     * @param maxRetries TODO
+     * @param maxRetries maximum number of retries per batch
      * @param builder an implicitly resolved [[RequestBuilder]] that wraps a phantom [[com.websudos.phantom.builder.query.ExecutableStatement]].
      *                Every T element that gets into the stream from the upstream is turned into a ExecutableStatement
      *                by means of this builder.
@@ -62,7 +62,7 @@ object ReactiveCassandra {
       flushInterval: Option[FiniteDuration] = None,
       completionFn: () => Unit = () => (),
       errorFn: Throwable => Unit = _ => (),
-      maxRetries: Int = 15)(implicit builder: RequestBuilder[CT, T],
+      maxRetries: Int = 3)(implicit builder: RequestBuilder[CT, T],
         system: ActorSystem, session: Session, space: KeySpace, ev: Manifest[T]): BatchSubscriber[CT, T] = {
       new BatchSubscriber[CT, T](
         ct.asInstanceOf[CT], // not being able to get rid of this casting. Can anyone help?.
