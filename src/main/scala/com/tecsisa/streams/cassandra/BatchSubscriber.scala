@@ -116,9 +116,8 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
       // If the current retry is below the maximum, schedule retry execution
       if (currentRetry < maxRetries) {
         val nextRetry = currentRetry + 1
-        errorFn(throwable)
         val retryDelay = BaseRetryDelay * nextRetry
-        log.info(s"Retrying C* batch operation in $retryDelay. Current retry is $nextRetry out of $maxRetries")
+        log.warning(s"Retrying C* batch operation in $retryDelay. Current retry is $nextRetry out of $maxRetries")
         system.scheduler.scheduleOnce(retryDelay, self, RetryExecution(elements, nextRetry))
       } else {
         handleError(throwable)
