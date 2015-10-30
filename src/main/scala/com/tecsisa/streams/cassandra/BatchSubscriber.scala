@@ -99,6 +99,9 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
 
   private var completed = false
 
+  /** Total number of batches sent and not acknowledged yet by Cassandra */
+  private var pendingBatches: Int = 0
+
   private val BaseRetryDelay = 5.seconds
 
   /** If a flushInterval is provided, then set a ReceiveTimeout */
@@ -122,28 +125,34 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
       }
 
     case BatchActor.Completed =>
-      if (buffer.nonEmpty)
+      if (buffer.nonEmpty) {
         executeStatements(buffer)
+        initializeBuffer()
+        pendingBatches += 1
+      }
       completed = true
 
     case ReceiveTimeout =>
       if (buffer.nonEmpty) {
         executeStatements(buffer)
         initializeBuffer()
+        pendingBatches += 1
       }
 
     case r: RetryExecution[T] =>
       executeStatements(r.elements, r.currentRetry)
 
     case rs: ResultSet =>
-      if (completed) shutdown()
-      else subscription.request(batchSize)
+      pendingBatches -= 1
+      if (completed && pendingBatches == 0) shutdown()
+      if (!completed) subscription.request(batchSize)
 
     case t: T =>
       buffer.append(t)
       if (buffer.size == batchSize) {
         executeStatements(buffer)
         initializeBuffer()
+        pendingBatches += 1
       }
   }
 
