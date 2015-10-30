@@ -1,6 +1,6 @@
 package com.tecsisa.streams.cassandra
 
-import akka.actor._
+import akka.actor.{ Props, Actor, ActorRef, ActorSystem, ActorLogging, ReceiveTimeout }
 import com.datastax.driver.core.ResultSet
 import com.tecsisa.streams.cassandra.BatchActor.{ RetryExecution, ExecutionFailed }
 import com.websudos.phantom.CassandraTable
@@ -127,8 +127,10 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
       completed = true
 
     case ReceiveTimeout =>
-      if (buffer.nonEmpty)
+      if (buffer.nonEmpty) {
         executeStatements(buffer)
+        initializeBuffer()
+      }
 
     case r: RetryExecution[T] =>
       executeStatements(r.elements, r.currentRetry)
