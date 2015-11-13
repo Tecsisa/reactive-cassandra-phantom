@@ -153,6 +153,9 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
         initializeBuffer()
         pendingBatches += 1
       }
+
+    case t: Throwable =>
+      handleError(t)
   }
 
   private def shutdown(): Unit = {

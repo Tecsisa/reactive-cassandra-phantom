@@ -13,8 +13,10 @@ object Deps {
   object Akka {
     val AkkaVersion = "2.4.0"
     val AkkaStreamVersion = "1.0"
+
     val actor = apply("actor")
     val slf4j = apply("slf4j")
+    val akkaTestkit = apply("testkit") % "test"
 
     private def apply(moduleName: String) = "com.typesafe.akka" %% s"akka-$moduleName" % AkkaVersion
   }
@@ -28,11 +30,14 @@ object Deps {
 
   object Testing {
     val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+    val mockito = "org.mockito" % "mockito-all" % "1.10.19" % "test"
   }
 
   object LoggingFrameworks {
     val scalaLogging = "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
     val logBack = "ch.qos.logback" % "logback-classic" % "1.1.3"
   }
+
+
 
 }

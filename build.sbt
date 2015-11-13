@@ -25,11 +25,13 @@ libraryDependencies ++= {
   Seq(
     Akka.actor,
     Akka.slf4j % "runtime",
+    Akka.akkaTestkit,
     Reactive.streams,
     Phantom.dsl,
     LoggingFrameworks.logBack,
     Testing.scalaTest,
-    Reactive.streamsTck
+    Reactive.streamsTck,
+    Testing.mockito
   )
 }
 
