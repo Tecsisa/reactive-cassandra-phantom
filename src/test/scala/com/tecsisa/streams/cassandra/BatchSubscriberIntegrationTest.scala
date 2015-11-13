@@ -9,6 +9,9 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{ FlatSpec, Matchers }
 
+import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.Future
+
 class BatchSubscriberIntegrationTest extends FlatSpec with MockitoSugar with Matchers with ScalaFutures with CassandraTest {
 
   import OperaTable.{ keySpace, session }
@@ -50,7 +53,7 @@ class BatchSubscriberIntegrationTest extends FlatSpec with MockitoSugar with Mat
       }
     }
 
-    val actorRef = TestActorRef(new BatchActor[OperaTable, Opera](
+    val actorRef = TestActorRef(new BatchActorImpl[OperaTable, Opera](
       OperaTable,
       OperaRequestBuilder,
       s,
@@ -62,6 +65,23 @@ class BatchSubscriberIntegrationTest extends FlatSpec with MockitoSugar with Mat
       errorFn = _ => (),
       maxRetries = 1
     ))
+
+    val failingActorRef = TestActorRef(new BatchActor[OperaTable, Opera](
+      OperaTable,
+      OperaRequestBuilder,
+      s,
+      5,
+      2,
+      batchType = BatchType.Unlogged,
+      flushInterval = None,
+      completionFn = () => (),
+      errorFn = _ => (),
+      maxRetries = 1
+    ){
+      override def query(elements: ArrayBuffer[Opera]) = {
+        Future.failed(new Exception())
+      }
+    })
 
     // Watching Actor from Probes
     val probe = TestProbe()

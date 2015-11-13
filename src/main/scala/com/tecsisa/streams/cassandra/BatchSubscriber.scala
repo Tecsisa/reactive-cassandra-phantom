@@ -1,17 +1,18 @@
 package com.tecsisa.streams.cassandra
 
-import akka.actor.{ Props, Actor, ActorRef, ActorSystem, ActorLogging, ReceiveTimeout }
+import akka.actor.{Actor, ActorLogging, ActorRef, ActorSystem, Props, ReceiveTimeout}
 import com.datastax.driver.core.ResultSet
-import com.tecsisa.streams.cassandra.BatchActor.{ RetryExecution, ExecutionFailed }
+import com.tecsisa.streams.cassandra.BatchActor.{ExecutionFailed, RetryExecution}
 import com.websudos.phantom.CassandraTable
-import com.websudos.phantom.batch.{ BatchType, BatchQuery }
-import com.websudos.phantom.builder.query.{ UsingPart, ExecutableStatement }
+import com.websudos.phantom.batch.{BatchQuery, BatchType}
+import com.websudos.phantom.builder.query.{ExecutableStatement, UsingPart}
 import com.websudos.phantom.dsl._
-import org.reactivestreams.{ Subscription, Subscriber }
+import org.reactivestreams.{Subscriber, Subscription}
 
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent.Future
 import scala.concurrent.duration._
-import scala.util.{ Success, Failure }
+import scala.util.{Failure, Success}
 
 /**
  * The [[Subscriber]] internal implementation based on
@@ -37,7 +38,7 @@ class BatchSubscriber[CT <: CassandraTable[CT, T], T] private[cassandra] (
     if (actor == null) {
       actor = system.actorOf(
         Props(
-          new BatchActor(
+          new BatchActorImpl(
             table,
             builder,
             s,
@@ -81,7 +82,7 @@ object BatchActor {
   case class ExecutionFailed[T](throwable: Throwable, elements: ArrayBuffer[T], currentRetry: Int)
 }
 
-class BatchActor[CT <: CassandraTable[CT, T], T](
+abstract class BatchActor[CT <: CassandraTable[CT, T], T](
     table: CT,
     builder: RequestBuilder[CT, T],
     subscription: Subscription,
@@ -93,7 +94,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     errorFn: Throwable => Unit,
     maxRetries: Int)(implicit session: Session, space: KeySpace, ev: Manifest[T]) extends Actor with ActorLogging {
 
-  import context.{ dispatcher, system }
+  import context.{dispatcher, system}
 
   private var buffer: ArrayBuffer[T] = _
 
@@ -103,6 +104,8 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
   private var pendingBatches: Int = 0
 
   private val BaseRetryDelay = 5.seconds
+
+  def query(elements: ArrayBuffer[T]): Future[ResultSet]
 
   /** If a flushInterval is provided, then set a ReceiveTimeout */
   flushInterval.foreach { interval =>
@@ -171,14 +174,7 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
   }
 
   private def executeStatements(elements: ArrayBuffer[T], currentRetry: Int = 0): Unit = {
-    val query = new BatchQuery(
-      elements.map(builder.request(table, _).qb).toIterator,
-      batchType,
-      UsingPart.empty,
-      false,
-      None
-    )
-    query.future().onComplete {
+    query(elements).onComplete {
       case Failure(e) => self ! ExecutionFailed(e, elements, currentRetry)
       case Success(resp) => self ! resp
     }
@@ -188,6 +184,38 @@ class BatchActor[CT <: CassandraTable[CT, T], T](
     buffer = new ArrayBuffer[T]()
     buffer.sizeHint(batchSize)
   }
+
+}
+
+class BatchActorImpl[CT <: CassandraTable[CT, T], T](
+  table: CT,
+  builder: RequestBuilder[CT, T],
+  subscription: Subscription,
+  batchSize: Int,
+  concurrentRequests: Int,
+  batchType: BatchType,
+  flushInterval: Option[FiniteDuration],
+  completionFn: () => Unit,
+  errorFn: Throwable => Unit,
+  maxRetries: Int)(implicit session: Session, space: KeySpace, ev: Manifest[T])
+    extends BatchActor(
+      table,
+      builder,
+      subscription,
+      batchSize,
+      concurrentRequests,
+      batchType,
+      flushInterval,
+      completionFn,
+      errorFn,
+      maxRetries) {
+  override def query(elements: ArrayBuffer[T]): Future[ResultSet] = new BatchQuery(
+    elements.map(builder.request(table, _).qb).toIterator,
+    batchType,
+    UsingPart.empty,
+    false,
+    None
+  ).future()
 
 }
 
