@@ -1,5 +1,4 @@
 *This project has been discontinued as this feature has been roughly [included](https://github.com/websudos/phantom/pull/348) in the phantom project itself.*
----
 
 Reactive Cassandra (with Phantom DSL)
 =================================
