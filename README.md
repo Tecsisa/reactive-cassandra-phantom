@@ -1,3 +1,6 @@
+*This project has been discontinued as this feature has been roughly [included](https://github.com/websudos/phantom/pull/348) in the phantom project itself.*
+---
+
 Reactive Cassandra (with Phantom DSL)
 =================================
 
@@ -123,9 +126,9 @@ In order to get this up and running, you'll need to bring some implicit context 
 - and one implementation of the RequestBuilder typeclass that contains the statement to be invoked once for streamed element.
 
 ```Scala
-  implicit val system = ActorSystem()	
+  implicit val system = ActorSystem()
   import OperaTable.{ keySpace, session }
-  
+
   object OperaTable extends OperaTable with SimpleCassandraConnector {
     implicit val keySpace: KeySpace = KeySpace("streams")
   }
@@ -156,7 +159,7 @@ This subscriber can take part of standard reactive streams pipelines being conne
         }
       })
     }
-  }	
+  }
 ```
 
 Of course, it's also possible to use this subscriber with Akka streams pipelines following the integration guidelines provided in the [Akka Streams documentation].
@@ -167,7 +170,7 @@ Currently, three kinds of CQL3 batches can be carried out:
 - Unlogged
 - Counter
 
-Please, refer to the [CQL3 documentation] for further explanation. 
+Please, refer to the [CQL3 documentation] for further explanation.
 
 ## Next Steps
 
@@ -181,7 +184,7 @@ Please, refer to the [CQL3 documentation] for further explanation.
 
 [reactive streams]: http://www.reactive-streams.org/
 [phantom]: https://github.com/websudos/phantom
-[elastic4s]: https://github.com/sksamuel/elastic4s 
+[elastic4s]: https://github.com/sksamuel/elastic4s
 [typeclass pattern]: http://danielwestheide.com/blog/2013/02/06/the-neophytes-guide-to-scala-part-12-type-classes.html
 [Tecsisa's bintray]: https://bintray.com/tecsisa/maven-bintray-repo
 [bintray-sbt]: https://github.com/softprops/bintray-sbt
