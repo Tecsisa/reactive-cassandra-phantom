@@ -21,6 +21,18 @@ class BatchSubscriberIntegrationTest extends FlatSpec with Matchers with ScalaFu
 
   }
 
+  it should "persist all data even if the subscriber never completes" in {
+    import scala.concurrent.duration._
+
+    val expected = OperaData.operas.length
+    // The short interval is just for the sake of test execution time, it's not a recommendation
+    val subscriber = OperaTable.subscriber(2, 1, flushInterval = Some(500.millis))
+    OperaEndlessPublisher.subscribe(subscriber)
+
+    blockUntil(s"Expected count of $expected") { () => OperaTable.count().futureValue.get == expected }
+
+  }
+
 }
 
 object OperaPublisher extends Publisher[Opera] {
@@ -34,6 +46,21 @@ object OperaPublisher extends Publisher[Opera] {
         remaining = remaining.drop(l.toInt)
         if (remaining.isEmpty)
           s.onComplete()
+      }
+    })
+  }
+
+}
+
+object OperaEndlessPublisher extends Publisher[Opera] {
+
+  override def subscribe(s: Subscriber[_ >: Opera]): Unit = {
+    var remaining = OperaData.operas
+    s.onSubscribe(new Subscription {
+      override def cancel(): Unit = ()
+      override def request(l: Long): Unit = {
+        remaining.take(l.toInt).foreach(s.onNext)
+        remaining = remaining.drop(l.toInt)
       }
     })
   }
